@@ -1,5 +1,7 @@
 # Project Solar - Machine Learning
 
+![Solar Predictions](./img/predictions.png)
+
 This project focuses on forecasting the energy yield of a household solar panel installation. The objective is to provide continuous predictions for the upcoming hours, enabling the owner to optimize energy consumption based on expected solar output (e.g., by scheduling appliance usage during high production periods).
 
 ## Data and Context
