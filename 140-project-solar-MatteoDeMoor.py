@@ -1,24 +1,30 @@
+import os
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 import pickle
 
-# Load CSV files
+# Load CSV files using relative paths
 def laad_csv_bestand():
-    forecast = pd.read_csv("datasets/forecast.csv")
-    sunset = pd.read_excel("datasets/sunrise-sunset.xlsx")
-    df = pd.read_csv("datasets/df.csv")
-
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    forecast_path = os.path.join(base_path, "datasets", "forecast.csv")
+    sunset_path = os.path.join(base_path, "datasets", "sunrise-sunset.xlsx")
+    df_path = os.path.join(base_path, "datasets", "df.csv")
+    
+    forecast = pd.read_csv(forecast_path)
+    sunset = pd.read_excel(sunset_path)
+    df = pd.read_csv(df_path)
+    
     return forecast, sunset, df
 
 def laden_model():
-    # The path to the saved .pkl file in the current directory
-    bestand_pad = "best_model.pkl"
-
-    # Load the saved model
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    bestand_pad = os.path.join(base_path, "best_model.pkl")
+    
     with open(bestand_pad, 'rb') as f:
         geladen_model = pickle.load(f)
-
+    
     return geladen_model
 
 # Transform data and train the model
@@ -64,13 +70,32 @@ def toepassen_model(forecast, sunset, df):
     y_forecast = model.predict(X_forecast)
 
     # Print results with date and hour
-    print("\nVoorspellingen:")
-    for i, (prediction, date, hour) in enumerate(zip(y_forecast, forecast_merged['Datum'], forecast_merged['Uur']), 1):
-        # Format the date to the correct format
-        formatted_date = pd.to_datetime(date).strftime('%Y-%m-%d') 
+    print("\nPredictions:")
+    for prediction, date, hour in zip(y_forecast, forecast_merged['Datum'], forecast_merged['Uur']):
+        formatted_date = pd.to_datetime(date).strftime('%Y-%m-%d')
+        print(f"Prediction for {formatted_date} at {hour} o'clock: {prediction:.2f} kWh")
 
-        # Print the prediction
-        print(f"Voorspelling voor {formatted_date} om {hour} uur: {prediction:.2f} kWh")
+    # Create a datetime column for plotting
+    forecast_merged['Datetime'] = pd.to_datetime(forecast_merged['Datum'].astype(str)) + pd.to_timedelta(forecast_merged['Uur'], unit='h')
+
+    # Plot the predictions
+    plt.figure(figsize=(10, 6))
+    plt.plot(forecast_merged['Datetime'], y_forecast, marker='o')
+    plt.xlabel("Datetime")
+    plt.ylabel("Predicted kWh")
+    plt.title("Solar Energy Predictions")
+    plt.grid(True)
+
+    # Create 'img' directory if it doesn't exist
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    img_dir = os.path.join(base_path, "img")
+    os.makedirs(img_dir, exist_ok=True)
+    
+    # Save the plot in the 'img' folder
+    img_path = os.path.join(img_dir, "predictions.png")
+    plt.savefig(img_path)
+    print(f"\nPlot saved to {img_path}")
+    plt.show()
 
 # Main function that calls the above functions
 def main():
