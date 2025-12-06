@@ -43,6 +43,12 @@ By combining these diverse data sources, the project builds a robust machine lea
 - **Python Script (`140-project-solar-MatteoDeMoor.py`):**  
   This script automates the data loading, preprocessing, model training, and prediction processes, serving as a command-line alternative to the notebook.
 
-## Author
+## License
 
-**Matteo De Moor**
+```text
+Copyright (c) 2025 Matteo De Moor
+All Rights Reserved.
+
+No permission is granted to copy, modify or redistribute this software without explicit written consent from the author.
+```
+
